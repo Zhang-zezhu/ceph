@@ -56,7 +56,7 @@ class C_handle_notify : public EventCallback {
 ostream& EventCenter::_event_prefix(std::ostream *_dout)
 {
   return *_dout << "Event(" << this << " nevent=" << nevent
-                << " time_id=" << time_event_next_id << ").";
+                << " time_id=" << time_event_next_id << " local=" << local_center << ").";
 }
 
 EventCenter *EventCenter::centers[MAX_EVENTCENTER];
@@ -144,6 +144,7 @@ EventCenter::~EventCenter()
 void EventCenter::set_owner()
 {
   centers[idx] = local_center = this;
+  ldout(cct, 0) << __func__ << " idx=" << idx << " local_center" << local_center << dendl;
 }
 
 int EventCenter::create_file_event(int fd, int mask, EventCallbackRef ctxt)
@@ -243,7 +244,10 @@ uint64_t EventCenter::create_time_event(uint64_t microseconds, EventCallbackRef 
 
 void EventCenter::delete_time_event(uint64_t id)
 {
-  assert(in_thread());
+  if (!in_thread()) {
+    lderr(cct) << __func__ << " id=" << id << " idx=" << idx << " local=" << local_center << " this=" << this << dendl;
+    assert(in_thread());
+  }
   ldout(cct, 10) << __func__ << " id=" << id << dendl;
   if (id >= time_event_next_id)
     return ;
