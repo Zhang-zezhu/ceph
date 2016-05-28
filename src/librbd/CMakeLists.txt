@@ -50,6 +50,7 @@ set(librbd_internal_srcs
   object_map/UpdateRequest.cc
   operation/FlattenRequest.cc
   operation/RebuildObjectMapRequest.cc
+  operation/ObjectMapIterate.cc
   operation/RenameRequest.cc
   operation/Request.cc
   operation/ResizeRequest.cc
